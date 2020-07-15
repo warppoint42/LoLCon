@@ -8,7 +8,7 @@ A fork of erikmwerner's <a href="https://github.com/erikmwerner/QJoyControl">QJo
   Planned future features:
   * Less crappy UI menus as I learn QT
   * Allowing for specific buttons to not disable the joystick, letting them be used as toggles and such. 
-  * Using AppleScript instead of CGEvents to click, allowing for true separation of mouse from stick movement (no more moving the mouse rapidly back and forth)
+  * Try using AppleScript instead of CGEvents to click (if it works), allowing for true separation of mouse from stick movement (no more moving the mouse rapidly back and forth)
   * Use capture button to switch between Red and Blue teams, as each team has a different centering on screen.
   * Extend to other OSes, automatic screen resolution handling
   * Right joycon support
