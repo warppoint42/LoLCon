@@ -1,3 +1,9 @@
+# LoLCon
+A fork of erikmwerner's <a href="https://github.com/erikmwerner/QJoyControl">QJoyControl<a>.
+
+
+
+
 # QJoyControl <img src="https://github.com/erikmwerner/QJoyControl/blob/master/img/Logo.png" align="left" width="64" height="64" title="">
 QJoyControl lets you use Nintendo Switch JoyCons as input devices on your computer. It was originally made to use a JoyCon as a PowerPoint remote, but it accumulated a few extra features along the way. Currently, QJoyControl supports:
 * JoyCons and Pro Controller
@@ -27,4 +33,4 @@ QJoyControl should work on MacOS 10.7 and later, although it has only been teste
 
 ## Disclaimer
 This project is not endorsed by, affiliated with, maintained, authorized, or sponsored by Nintendo. All product and company names are the registered trademarks of their original owners. The use of any trade name or trademark is for identification and reference purposes only and does not imply any association with the trademark holder of their product brand.
-# LoLCon
+
