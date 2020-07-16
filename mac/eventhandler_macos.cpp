@@ -118,6 +118,10 @@ void EventHandler::addMapping(int from, int to)
     keyCodeMap.insert(from, to);
 }
 
+void EventHandler::removeMapping(int from){
+    keyCodeMap.insert(from, BUTTON_OFF);
+}
+
 void EventHandler::mapToMouseButton(int mask, int button)
 {
     if(button == 1) {
@@ -231,6 +235,7 @@ void EventHandler::handleButtonPress(int button_mask){
     // otherwise, get the key code value for the button
     else {
         int qt_key = keyCodeMap.value(button_mask,  Qt::Key_Enter);
+        if(qt_key == BUTTON_OFF) return; //do nothing if button disabled
         unsigned short cg_key = qt_to_cg.value(qt_key);
         CGEventRef keyEvent = CGEventCreateKeyboardEvent( nullptr, cg_key, true ) ;
         CGEventPost( kCGHIDEventTap, keyEvent ) ;
@@ -271,6 +276,7 @@ void EventHandler::handleButtonRelease(int button_mask){
     }
     else {
         int qt_key = keyCodeMap.value(button_mask, Qt::Key_Enter);
+        if(qt_key == BUTTON_OFF) return; //do nothing if button disabled
         unsigned short cg_key = qt_to_cg.value(qt_key);
         CGEventRef keyEvent = CGEventCreateKeyboardEvent( nullptr, cg_key, false ) ;
         CGEventPost( kCGHIDEventTap, keyEvent ) ;

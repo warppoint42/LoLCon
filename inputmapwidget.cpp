@@ -108,7 +108,8 @@ void InputMapWidget::setClickMap(int code)
         _handler->mapToMouseButton(_button_mask, 2);
        // _handler->addMapping(_button_mask, kCGEventLeftMouseDown);
     }
-    else if (code == 4){ //disable???
+    else if (code == 3){ //disable???
         setEnabled(false);
+        _handler->removeMapping(_button_mask);
     }
 }

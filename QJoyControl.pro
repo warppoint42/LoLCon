@@ -31,8 +31,8 @@ SOURCES += \
     inputmappanel.cpp \
     inputmapwidget.cpp \
     main.cpp \
-    mainwindow.cpp \
     joyconworker.cpp \
+    mainwindow.mm \
     statuswidget.cpp
 
 

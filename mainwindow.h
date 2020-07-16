@@ -69,8 +69,8 @@ private slots:
     void on_pushButtonStream_clicked();
 
     void on_checkBoxDiagnostics_toggled(bool checked);
-    void on_checkBoxAppNap_toggled(bool checked);
-    void on_checkBoxIdleSleep_toggled(bool checked);
+//    void on_checkBoxAppNap_toggled(bool checked);
+//    void on_checkBoxIdleSleep_toggled(bool checked);
 
     void on_toolButtonRefresh_clicked();
     void on_toolButtonConnect_clicked();
@@ -134,6 +134,23 @@ private:
     bool _analog_centered = true;
 
     void clickAt(int x, int y);
+    void postNotification(QString title, QString message);
+    void postNotification(QString title, QString subtitle, QString message);
+    void lolnxtmode();
+
+    const int redx = 700;
+    const int redy = 290;
+    const int bluex = 583;
+    const int bluey = 380;
+
+    enum LOLSTATUS{
+        LOL_OFF,
+        LOL_RED,
+        LOL_BLUE
+    };
+
+    LOLSTATUS side = LOL_OFF;
+
 };
 
 #endif // MAINWINDOW_H

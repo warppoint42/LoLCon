@@ -47,6 +47,7 @@ public:
     void handleButtonPress(int button_mask);
     void handleButtonRelease(int button_mask);
     void addMapping(int from, int to);
+    void removeMapping(int from);
     void mapToMouseButton(int mask, int button);
 
 private:
@@ -57,6 +58,7 @@ private:
     QMap<int, unsigned short> qt_to_cg;
     bool _left_button_down = false;
     bool _right_button_down = false;
+    const int BUTTON_OFF = -999;
 };
 
 #endif // EVENTHANDLER_H

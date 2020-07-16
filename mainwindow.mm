@@ -5,12 +5,13 @@
 #include "eventhandler.h"
 
 #include<cstdlib>
-#include<iostream>
-#include<string.h>
-#include<cstdio>
-using namespace std;
+//#include<iostream>
+//#include<string.h>
+//#include<cstdio>
+//using namespace std;
 #import "CoreGraphics/CoreGraphics.h"
-#import<unistd.h>
+//#import<unistd.h>
+#import <Foundation/Foundation.h>
 
 
 #include <QVariant>
@@ -60,7 +61,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->inputMapL->addMapper(new InputMapWidget("SL", L_BUT_SL | 512, Qt::Key_K, _event_handler));
     ui->inputMapL->addMapper(new InputMapWidget("SR", L_BUT_SR | 512, Qt::Key_L, _event_handler));
     ui->inputMapL->addMapper(new InputMapWidget("Minus", L_BUT_MINUS | 256, Qt::Key_Enter, _event_handler));
-    ui->inputMapL->addMapper(new InputMapWidget("Capture", L_BUT_CAP | 256, Qt::Key_Escape, _event_handler));
+    _capture_mapper = ui->inputMapL->addMapper(new InputMapWidget("Capture", L_BUT_CAP | 256, Qt::Key_Escape, _event_handler));
     ui->inputMapL->addMapper(new InputMapWidget("L Stick Click", L_BUT_STICK | 256, Qt::Key_Enter, _event_handler));
     ui->inputMapR->setName("Right");
     ui->inputMapR->addMapper(new InputMapWidget("X", R_BUT_X, Qt::Key_Up, _event_handler));
@@ -269,7 +270,7 @@ void MainWindow::showAbout()
     message_box.setText(text);
     message_box.setInformativeText(info_text);
     message_box.setIconPixmap(_tray_icon->icon().pixmap(64,64));
-            message_box.addButton(QMessageBox::Ok);
+    message_box.addButton(QMessageBox::Ok);
 
     message_box.exec();
 }
@@ -507,27 +508,28 @@ void MainWindow::clickAt(int x, int y){
     CFRelease(event);
 
     CGEventRef click_down = CGEventCreateMouseEvent(
-        NULL, kCGEventRightMouseDown,
-        CGPointMake(x, y),
-        kCGMouseButtonRight
-      );
+                NULL, kCGEventRightMouseDown,
+                CGPointMake(x, y),
+                kCGMouseButtonRight
+                );
 
-      CGEventRef click_up = CGEventCreateMouseEvent(
-        NULL, kCGEventRightMouseUp,
-        CGPointMake(x, y),
-        kCGMouseButtonRight
-      );
+    CGEventRef click_up = CGEventCreateMouseEvent(
+                NULL, kCGEventRightMouseUp,
+                CGPointMake(x, y),
+                kCGMouseButtonRight
+                );
 
-      CGEventRef move = CGEventCreateMouseEvent(
-          NULL, kCGEventMouseMoved,
-          cursor,
-          kCGMouseButtonLeft
-        );
+    CGEventRef move = CGEventCreateMouseEvent(
+                NULL, kCGEventMouseMoved,
+                cursor,
+                kCGMouseButtonLeft
+                );
 
     CGEventPost(kCGHIDEventTap, click_down);
-    usleep(ui->spinBox_clicklen->value() * 1000);
+    CGAssociateMouseAndMouseCursorPosition(false); //lock mouse position -- for whatever reason, this slows the mouse movement in normal
     CGEventPost(kCGHIDEventTap, click_up);
-
+    usleep(ui->spinBox_clicklen->value() * 1000);
+    CGAssociateMouseAndMouseCursorPosition(true); //unlock mouse position
     CGEventPost(kCGHIDEventTap, move);
 
 }
@@ -542,9 +544,17 @@ void MainWindow::onNewInputData(QList<int> button_data, QList<double> analog_dat
 
     //saved data - check if l joycon has button pressed
     int b1 = button_data[1] & (L_BUT_MINUS | L_BUT_STICK | L_BUT_CAP | 256);
-    int olb1 = _last_button_state[1] & (L_BUT_MINUS | L_BUT_STICK | L_BUT_CAP | 256);
+    //    int olb1 = _last_button_state[1] & (L_BUT_MINUS | L_BUT_STICK | L_BUT_CAP | 256);
     int b2 = button_data[2] & (L_BUT_DOWN | L_BUT_UP | L_BUT_RIGHT | L_BUT_LEFT | L_BUT_SR | L_BUT_SL | L_BUT_L | L_BUT_ZL | 512);
-    int olb2 = _last_button_state[2] & (L_BUT_DOWN | L_BUT_UP | L_BUT_RIGHT | L_BUT_LEFT | L_BUT_SR | L_BUT_SL | L_BUT_L | L_BUT_ZL | 512);
+    //    int olb2 = _last_button_state[2] & (L_BUT_DOWN | L_BUT_UP | L_BUT_RIGHT | L_BUT_LEFT | L_BUT_SR | L_BUT_SL | L_BUT_L | L_BUT_ZL | 512);
+
+    int lclickb = button_data[1] & (L_BUT_CAP | 256);
+    int lclickbol = _last_button_state[1] & (L_BUT_CAP | 256);
+
+    //left cap pressed down
+    if (((lclickb ^ lclickbol) & lclickb) && ui->checkBoxLolAnalog->isChecked()){
+        lolnxtmode();
+    }
 
     handleButtons(button_data);
 
@@ -614,57 +624,62 @@ void MainWindow::onNewInputData(QList<int> button_data, QList<double> analog_dat
     }
 
     //if left joycon button pressed, delay addl clicks
-//    if(((b1 ^ olb1) & b1) | ((b2 ^ olb2) & b2)){
-//        _time_last_lolclick = now;
-//        cout << "working" << endl;
-//    }
+    //    if(((b1 ^ olb1) & b1) | ((b2 ^ olb2) & b2)){
+    //        _time_last_lolclick = now;
+    //        cout << "working" << endl;
+    //    }
 
-    //if left joycon button pressed, delay addl clicks until release
+    //if left joycon button pressed, delay addl clicks until release TODO possibly add additional delay before or after click
     if(b1 | b2){
         _time_last_lolclick = now;
-        cout << "working" << endl;
+        //        cout << "working" << endl;
     }
 
-//    TODO: turn off boxes when other is checked
-    if(ui->checkBoxLolAnalog->isChecked()){
+
+//    CGEventRef event = CGEventCreate(NULL);
+//    CGPoint cursor = CGEventGetLocation(event);
+//    CFRelease(event);
+
+//    if (CGEventSourceButtonState(kCGEventSourceStateCombinedSessionState, kCGMouseButtonRight)){
+//        cout << cursor.x << "," << cursor.y << endl;
+//    }
+
+    //    TODO: turn off boxes when other is checked
+    if(ui->checkBoxLolAnalog->isChecked() && side != LOL_OFF && !CGEventSourceButtonState(kCGEventSourceStateCombinedSessionState, kCGMouseButtonRight)){
         qint64 dt2 = now - _time_last_lolclick;
 
         if(dt2 > ui->spinBox_clickdelay->value()){
 
-            double radius = ui->spinBox_radius->value(); //TODO: make changeable in ui
-            double deadzone = ui->spinBox_deadzone->value() / 100.0; //TODO: make changeable in ui
+            double radius = ui->spinBox_radius->value();
+            double deadzone = ui->spinBox_deadzone->value() / 100.0;
             double x = analog_data[2];
             double y = analog_data[3];
             double dist = sqrt(pow(x,2) + pow(y,2));
             int x2 = x * radius + 583;
             int y2 = 380 - y * radius;
 
-            CGEventRef event = CGEventCreate(NULL);
-            CGPoint cursor = CGEventGetLocation(event);
-            CFRelease(event);
+            if(side == LOL_RED){
+                x2 = x * radius + redx;
+                y2 = redy - y * radius;
+            } else if (side == LOL_BLUE){
+                x2 = x * radius + bluex;
 
-            if (CGEventSourceButtonState(kCGEventSourceStateCombinedSessionState, kCGMouseButtonLeft)){
-                cout << cursor.x << "," << cursor.y << endl;
             }
 
             if(deadzone < dist){
-                if (!CGEventSourceButtonState(kCGEventSourceStateCombinedSessionState, kCGMouseButtonRight)){
 
-                    clickAt(x2, y2);
+                clickAt(x2, y2);
 
-                   _time_last_lolclick = now;
-                   _analog_centered = false;
-                } else{
-                    if(!_analog_centered){
+                _time_last_lolclick = now;
+                _analog_centered = false;
+            } else if(!_analog_centered){
 
-                        x2 = 583;
-                        y2 = 380;
+                x2 = side == LOL_RED? redx: bluex;
+                y2 = side == LOL_RED? redy: bluey;
 
-                        clickAt(x2, y2);
-
-                        _analog_centered = true;
-                    }
-                }
+                clickAt(x2, y2);
+                _time_last_lolclick = now;
+                _analog_centered = true;
             }
         }
     }
@@ -722,7 +737,7 @@ void MainWindow::sendCameraConfig()
 
     QString error_msg;
     ir_image_config ir_new_config = {0};
-    int res = 0;
+    //    int res = 0; //Removed by EITM -- silence warning
     // The IR camera lens has a FoV of 123∞. The IR filter is a NIR 850nm wavelength pass filter.
 
     // Resolution config register and no of packets expected
@@ -847,14 +862,14 @@ void MainWindow::on_pushButtonCapture_clicked()
     //if (check_if_connected())
     //    return;
     qDebug()<<"begin ir capture";
-    int res;
+    int res = 0;
     //ui->pushButtonStream->setEnabled(false);
     //ui->pushButtonCapture->setEnabled(false);
     //enable_IRVideoPhoto = false;
 
     sendCameraConfig();
     //emit captureImage(0);
-    //res = prepareSendIRConfig(true);
+    //    res = prepareSendIRConfig(true);
 
     if (res == 0) {
         //this->lbl_IRStatus->Text = "Status: Done! Saved to IRcamera.png";
@@ -912,15 +927,15 @@ void MainWindow::on_checkBoxDiagnostics_toggled(bool checked)
     }
 }
 
-void MainWindow::on_checkBoxAppNap_toggled(bool checked)
-{
+//void MainWindow::on_checkBoxAppNap_toggled(bool checked)
+//{
 
-}
+//}
 
-void MainWindow::on_checkBoxIdleSleep_toggled(bool checked)
-{
+//void MainWindow::on_checkBoxIdleSleep_toggled(bool checked)
+//{
 
-}
+//}
 
 
 // raw (x,y) values in data[0] and data[1] (.. to ..)
@@ -1319,11 +1334,54 @@ void MainWindow::on_checkBoxRightClick_toggled(bool checked)
 // if checked, disable analog stick controls
 void MainWindow::on_checkBoxLolAnalog_toggled(bool checked)
 {
+    //TODO: Allow for left joyclon analog mouse to function with LOL_OFF
     if(checked) {
         ui->checkBoxLeftAnalogMouse->setChecked(false);
         ui->checkBoxLeftAnalogMouse->setEnabled(false);
+        _capture_mapper->setClickMap(3);
+        side = LOL_OFF;
+        postNotification("LoLCon", "Default controls (no side)");
     }
     else {
         ui->checkBoxLeftAnalogMouse->setEnabled(true);
+        _capture_mapper->setClickMap(0);
     }
 }
+
+void MainWindow::lolnxtmode(){
+    if(side == LOL_OFF){
+        side = LOL_BLUE;
+        postNotification("LoLCon", "Side set to blue.");
+    } else if(side == LOL_BLUE){
+        side = LOL_RED;
+        postNotification("LoLCon", "Side set to red.");
+    } else if(side == LOL_RED){
+        side = LOL_OFF;
+        postNotification("LoLCon", "Default controls (no side)");
+    }
+}
+
+
+//From https://wiki.qt.io/How_to_use_OS_X_Notification_Center
+void MainWindow::postNotification(QString title, QString message) {
+    NSUserNotification* notification = [[NSUserNotification alloc] init];
+    notification.title = title.toNSString();
+    notification.informativeText = message.toNSString();
+    notification.soundName = NSUserNotificationDefaultSoundName;   //Will play a default sound
+    [[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification: notification];
+    [notification autorelease];
+}
+
+//With Subtitle
+void MainWindow::postNotification(QString title, QString subtitle, QString message) {
+    NSUserNotification* notification = [[NSUserNotification alloc] init];
+    notification.title = title.toNSString();
+    notification.subtitle = subtitle.toNSString();
+    notification.informativeText = message.toNSString();
+    notification.soundName = NSUserNotificationDefaultSoundName;   //Will play a default sound
+    [[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification: notification];
+    [notification autorelease];
+}
+
+
+
