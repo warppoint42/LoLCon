@@ -1,18 +1,19 @@
 # LoLCon
 A fork of erikmwerner's <a href="https://github.com/erikmwerner/QJoyControl">QJoyControl<a> modified with a specific scheme for playing League of Legends using left joycon and mouse. This allows you to use the joystick to move and control cast directions with the mouse.
   * Analog stick clicks rapidly in a circle around the champion, and clicks on the champion when centered. Naturally, this means you must play with fixed camera on.
-  * Abilities can be used through binding joycon buttons. When a button is held or the mouse clicked, the analog stick is ignored. 
+  * Abilities can be used through binding joycon buttons. When a button is held or the mouse clicked, the analog stick is ignored, so your ability will cast towards your cursor. 
     * A cool option here is to bind a mouse button to attack only, theoretically allowing for easy kiting.
+    * Use capture button to switch between Red and Blue teams, as each team has a different centering on screen.
   * Currently functions only on MacOS. However, the only architechture-specific code is the mouse events.
   
   Planned future features:
   * Less crappy UI menus as I learn QT
   * Allowing for specific buttons to not disable the joystick, letting them be used as toggles and such. 
   * Try using AppleScript instead of CGEvents to click (if it works), allowing for true separation of mouse from stick movement (no more moving the mouse rapidly back and forth)
-  * Use capture button to switch between Red and Blue teams, as each team has a different centering on screen.
   * Extend to other OSes, automatic screen resolution handling
-  * Right joycon support
-  * Tilt controls? Shake to dance/rumble?
+  * Add mouse centering settings to the UI to support computers with different resolutions or windowed mode. 
+  * Right joycon support for directional ability casts, autos, generally having more buttons
+  * Tilt controls? Shake to dance? Rumble?
 
 
 
