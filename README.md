@@ -3,11 +3,12 @@ A fork of erikmwerner's <a href="https://github.com/erikmwerner/QJoyControl">QJo
   * Analog stick clicks rapidly in a circle around the champion, and clicks on the champion when centered. Naturally, this means you must play with fixed camera on.
   * Abilities can be used through binding joycon buttons. When a button is held or the mouse clicked, the analog stick is ignored, so your ability will cast towards your cursor. 
     * A cool option here is to bind a mouse button to attack only, theoretically allowing for easy kiting.
-    * Use capture button to switch between Red and Blue teams, as each team has a different centering on screen.
+    * Use capture button to switch between Red and Blue teams, as each team has a different centering on screen. Cycles between Red/Blue/Left Analog click disabled, so that you can actually turn off the program without it clicking on random parts of your screen.
   * Currently functions only on MacOS. However, the only architechture-specific code is the mouse events.
   
   Planned future features:
   * Less crappy UI menus as I learn QT
+  * Less crappy code as this was done with minimal brain cell usage
   * Allowing for specific buttons to not disable the joystick, letting them be used as toggles and such. 
   * Try using AppleScript instead of CGEvents to click (if it works), allowing for true separation of mouse from stick movement (no more moving the mouse rapidly back and forth)
   * Extend to other OSes, automatic screen resolution handling
